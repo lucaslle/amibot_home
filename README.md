@@ -18,7 +18,7 @@ Télécommande mobile (Flutter) pour un aspirateur robot **Amibot Spirit H2O**, 
 | **Clés passées à la compilation (`--dart-define-from-file=tuya.json`)** | Les clés ne sont jamais dans le code ni sur GitHub (`tuya.json` est ignoré par git). | Clés en dur dans le code. |
 | **Interface `RobotService`** | Les écrans ne connaissent que cette interface : on peut changer la façon de joindre le robot (cloud, SDK, serveur, infrarouge) sans toucher à l'UI. | Appels Tuya directement dans les écrans. |
 | **Mode simulé** | Sans clés, l'app tourne avec un faux robot : on peut développer l'UI sans le robot. | — |
-| **Pas de SDK mobile Tuya pour l'instant** | Pas de plugin Flutter officiel (il faudrait une passerelle native Kotlin/Swift) ; gratuit seulement en version d'essai (~20 utilisateurs), puis payant (~5 000 $/an la 1ʳᵉ année, à vérifier sur tuya.com). | Connexion par compte Smart Life via le SDK. |
+| **Pas de SDK mobile Tuya pour l'instant** | Pas de plugin Flutter officiel (il faudrait une passerelle native Kotlin/Swift) ; gratuit seulement en version d'essai (~20 utilisateurs), puis payant (~5 000 $/an la 1ʳᵉ année, à vérifier sur tuya.com). | Application SDK avec ses propres comptes. |
 
 ### Limite de sécurité connue
 
@@ -27,7 +27,7 @@ Les clés Tuya sont incluses dans l'APK compilé. C'est acceptable **tant que l'
 Pour partager l'app plus tard, trois options :
 1. **Chaque utilisateur saisit ses propres clés** dans un écran Réglages (stockage `flutter_secure_storage`). Gratuit, mais chacun doit créer un compte développeur Tuya.
 2. **Notre projet Tuya + un serveur** : les amis lient leur compte Smart Life par QR code ; le serveur garde les clés et ne laisse chacun piloter que son robot.
-3. **SDK mobile Tuya** : connexion avec le compte Smart Life. C'est le plus simple pour l'utilisateur, mais payant au-delà de la version d'essai.
+3. **SDK mobile Tuya** : l'app a ses propres comptes, gérés par Tuya, sans serveur à nous. Un compte Smart Life ne fonctionne pas dans une app SDK : il faut retirer le robot de Smart Life puis l'appairer dans l'app. Gratuit en version d'essai, payant au-delà.
 
 Contourner la licence Tuya (réutiliser les clés de l'app Smart Life, modifier son APK) est exclu.
 
@@ -92,6 +92,18 @@ lib/
 test/                                    tests du client Tuya et de l'écran
 tuya.example.json                        modèle du fichier de clés (tuya.json, ignoré par git)
 ```
+
+## Plan de la maison (carte)
+
+Possible seulement si le robot cartographie lui-même : c'est le cas du **Spirit Laser H2O** (tourelle laser sur le dessus), pas d'un modèle sans laser, qui donne au mieux le tracé du parcours.
+
+Avec le modèle laser, le SDK le permet :
+
+- Tuya propose un kit dédié aux robots aspirateurs (« Sweeper SDK ») qui transmet les données de la carte et du parcours en temps réel.
+- Il fournit des données brutes (grille de points, position du robot, chemin) : il faut dessiner le plan dans Flutter, par exemple avec un `CustomPainter`. C'est un vrai morceau de travail.
+- Les fonctions avancées (zones interdites, nettoyage pièce par pièce, renommer les pièces) ne marchent que si le firmware du robot les gère, ce que beaucoup de robots d'entrée de gamme ne font pas.
+
+**Vérifier avant de coder** : une fois le robot ajouté dans Smart Life, si l'app Smart Life affiche une carte, le robot envoie bien les données et le SDK pourra les récupérer. Si Smart Life n'affiche rien, l'app n'en affichera pas plus.
 
 ## Idées pour la suite
 
