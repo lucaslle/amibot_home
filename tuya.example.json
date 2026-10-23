@@ -1,0 +1,6 @@
+{
+  "TUYA_ACCESS_ID": "votre-access-id",
+  "TUYA_ACCESS_SECRET": "votre-access-secret",
+  "TUYA_DEVICE_ID": "id-du-robot",
+  "TUYA_REGION": "eu"
+}
